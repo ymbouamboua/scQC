@@ -1,40 +1,30 @@
----
-output:
-  github_document:
-    toc: false
-always_allow_html: true
-dev: ragg_png
----
 
 <!-- README.md is generated from README.Rmd. Please edit README.Rmd only. -->
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
-
-
 <div align="center">
+
 <img src="man/figures/scQC_logo.svg" width="300" alt="scQC logo"/>
+
 </div>
 
-
 <!-- badges: start -->
-![R](https://img.shields.io/badge/R-%3E%3D4.3-blue)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+![R](https://img.shields.io/badge/R-%3E%3D4.3-blue) [![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- badges: end -->
 
 ## Overview
 
-**scQC** is an R package for reproducible quality control of single-cell RNA-seq datasets.
+**scQC** is an R package for reproducible quality control of single-cell
+RNA-seq datasets.
 
-It accepts 10x Genomics outputs, matrices, and Seurat objects, computes standard QC metrics, filters low-quality cells, optionally detects doublets, and returns a QC-filtered Seurat object together with reproducible summaries.
+It accepts 10x Genomics outputs, matrices, and Seurat objects, computes
+standard QC metrics, filters low-quality cells, optionally detects
+doublets, and returns a QC-filtered Seurat object together with
+reproducible summaries.
 
 ## Features
 
@@ -52,40 +42,40 @@ It accepts 10x Genomics outputs, matrices, and Seurat objects, computes standard
 
 You can install the development version from GitHub with:
 
-```{r installation, eval=FALSE}
+``` r
 # install.packages("pak")
 pak::pak("ymbouamboua/scQC")
 ```
 
 Alternatively, install the package from a local clone:
 
-```{r local-installation, eval=FALSE}
+``` r
 devtools::install()
 ```
 
 ## Load scQC
 
-```{r load-package, eval=FALSE}
+``` r
 library(scQC)
 ```
 
 ## Supported inputs
 
-| Input type | Supported |
-|:-----------|:---------:|
-| 10x Genomics directory | Yes |
-| `filtered_feature_bc_matrix.h5` | Yes |
-| `raw_feature_bc_matrix.h5` | Yes |
-| `dgCMatrix` | Yes |
-| Base R matrix | Yes |
-| Seurat object | Yes |
-| List of supported inputs | Yes |
+| Input type                      | Supported |
+|:--------------------------------|:---------:|
+| 10x Genomics directory          |    Yes    |
+| `filtered_feature_bc_matrix.h5` |    Yes    |
+| `raw_feature_bc_matrix.h5`      |    Yes    |
+| `dgCMatrix`                     |    Yes    |
+| Base R matrix                   |    Yes    |
+| Seurat object                   |    Yes    |
+| List of supported inputs        |    Yes    |
 
 ## Quick start
 
 ### From a 10x Genomics directory
 
-```{r quick-start-10x, eval=FALSE}
+``` r
 library(scQC)
 
 result <- run_qc(
@@ -97,19 +87,19 @@ result <- run_qc(
 
 Inspect the filtered Seurat object:
 
-```{r inspect-object, eval=FALSE}
+``` r
 result$object
 ```
 
 Inspect the QC summary:
 
-```{r inspect-summary, eval=FALSE}
+``` r
 result$summary
 ```
 
 ### From a Seurat object
 
-```{r quick-start-seurat, eval=FALSE}
+``` r
 result <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -119,7 +109,7 @@ result <- run_qc(
 
 ### From a count matrix
 
-```{r quick-start-matrix, eval=FALSE}
+``` r
 result <- run_qc(
   x = counts,
   sample_id = "Sample1",
@@ -131,9 +121,10 @@ The matrix must contain genes in rows and cells in columns.
 
 ## Reading input separately
 
-Use `read_sc_input()` when you only want to convert an input into a Seurat object.
+Use `read_sc_input()` when you only want to convert an input into a
+Seurat object.
 
-```{r read-input, eval=FALSE}
+``` r
 object <- read_sc_input(
   x = "path/to/filtered_feature_bc_matrix",
   sample_id = "Sample1"
@@ -148,11 +139,12 @@ The function supports:
 - 10x Genomics directories;
 - 10x Genomics HDF5 files.
 
-For multimodal 10x data, the gene-expression feature type is selected automatically when available.
+For multimodal 10x data, the gene-expression feature type is selected
+automatically when available.
 
 ## Quality-control workflow
 
-```text
+``` text
 Input
   |
   v
@@ -194,9 +186,10 @@ Return QC result
 
 ### MAD-based filtering
 
-MAD-based filtering calculates data-driven thresholds from the distribution of QC metrics.
+MAD-based filtering calculates data-driven thresholds from the
+distribution of QC metrics.
 
-```{r mad-filtering, eval=FALSE}
+``` r
 result <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -210,7 +203,7 @@ result <- run_qc(
 
 Fixed filtering uses explicitly defined thresholds.
 
-```{r fixed-filtering, eval=FALSE}
+``` r
 result <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -225,9 +218,10 @@ result <- run_qc(
 
 ### No cell filtering
 
-Use `method = "none"` to calculate metrics without removing cells based on QC thresholds.
+Use `method = "none"` to calculate metrics without removing cells based
+on QC thresholds.
 
-```{r no-filtering, eval=FALSE}
+``` r
 result <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -241,7 +235,7 @@ result <- run_qc(
 
 Doublet detection can be enabled with:
 
-```{r doublets, eval=FALSE}
+``` r
 result <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -252,13 +246,14 @@ result <- run_qc(
 
 `scQC` uses `scDblFinder` when doublet detection is requested.
 
-Doublet detection should generally be performed independently for each biological sample or capture.
+Doublet detection should generally be performed independently for each
+biological sample or capture.
 
 ## Multiple samples
 
 A named list can be supplied to `run_qc()`.
 
-```{r multiple-samples, eval=FALSE}
+``` r
 inputs <- list(
   Sample1 = "data/Sample1/filtered_feature_bc_matrix",
   Sample2 = "data/Sample2/filtered_feature_bc_matrix",
@@ -271,7 +266,8 @@ result <- run_qc(
 )
 ```
 
-Naming the list is recommended because the names are used as sample identifiers when possible.
+Naming the list is recommended because the names are used as sample
+identifiers when possible.
 
 ## Returning only the Seurat object
 
@@ -279,7 +275,7 @@ By default, `run_qc()` returns a complete result object.
 
 To return only the filtered Seurat object:
 
-```{r return-object, eval=FALSE}
+``` r
 qc_object <- run_qc(
   x = seurat_object,
   sample_id = "Sample1",
@@ -292,7 +288,7 @@ qc_object <- run_qc(
 
 A complete result may contain:
 
-```{r result-structure, eval=FALSE}
+``` r
 names(result)
 ```
 
@@ -310,7 +306,7 @@ Typical components include:
 
 ## Example QC run
 
-```{r full-example, eval=FALSE}
+``` r
 result <- run_qc(
   x = "data/Sample1/filtered_feature_bc_matrix",
   sample_id = "Sample1",
@@ -343,10 +339,9 @@ Depending on the selected options, `scQC` can write:
 - run parameters;
 - processing logs or failure summaries.
 
-
 Open the function documentation with:
 
-```{r help, eval=FALSE}
+``` r
 ?run_qc
 ?read_sc_input
 ```
@@ -355,7 +350,8 @@ Open the function documentation with:
 
 `scQC` is currently under active development.
 
-The interface, defaults, and returned result structure may change before the first stable release.
+The interface, defaults, and returned result structure may change before
+the first stable release.
 
 ## Contributing
 
@@ -372,7 +368,8 @@ When reporting a problem, please include:
 
 A formal citation will be added in a future release.
 
-Until then, please cite the GitHub repository and the package version used in your analysis.
+Until then, please cite the GitHub repository and the package version
+used in your analysis.
 
 ## License
 

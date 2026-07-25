@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1113.56 1168.92">
+  <!-- Generator: Adobe Illustrator 30.6.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 109)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke-linecap: round;
+      }
+
+      .st0, .st1, .st2, .st3, .st4, .st5 {
+        fill: none;
+      }
+
+      .st0, .st6, .st7 {
+        stroke: #000e55;
+      }
+
+      .st0, .st8 {
+        stroke-width: 18px;
+      }
+
+      .st9 {
+        fill: #163b7a;
+      }
+
+      .st9, .st2, .st10, .st11, .st12, .st3, .st4, .st5, .st8, .st13 {
+        stroke: #1c75bc;
+      }
+
+      .st9, .st10, .st11, .st12, .st8, .st13 {
+        stroke-miterlimit: 10;
+      }
+
+      .st1 {
+        stroke: #18aaa4;
+        stroke-width: 6px;
+      }
+
+      .st14 {
+        stroke: #37489e;
+      }
+
+      .st14, .st15 {
+        fill: #0b1f4d;
+      }
+
+      .st14, .st15, .st16, .st7 {
+        isolation: isolate;
+      }
+
+      .st14, .st7 {
+        font-family: Arial-Black, 'Arial Black';
+        font-size: 180px;
+        font-weight: 800;
+        letter-spacing: 0em;
+      }
+
+      .st15 {
+        font-family: Arial-BoldMT, Arial;
+        font-size: 48px;
+        font-weight: 700;
+      }
+
+      .st2 {
+        stroke-dasharray: 14 10;
+      }
+
+      .st2, .st3 {
+        stroke-width: 4px;
+      }
+
+      .st17 {
+        fill: #20b6a8;
+      }
+
+      .st10 {
+        fill: #22b6a7;
+      }
+
+      .st6 {
+        stroke-width: 16px;
+      }
+
+      .st6, .st8 {
+        fill: #fff;
+      }
+
+      .st18 {
+        fill: #328fe3;
+      }
+
+      .st7 {
+        fill: #00bfbd;
+      }
+
+      .st11 {
+        fill: #16a6a2;
+      }
+
+      .st19 {
+        opacity: .98;
+      }
+
+      .st20, .st13 {
+        fill: #6b67d7;
+      }
+
+      .st12 {
+        fill: #3274c8;
+      }
+
+      .st4 {
+        stroke-width: 3px;
+      }
+
+      .st5 {
+        stroke-linejoin: round;
+        stroke-width: 20px;
+      }
+    </style>
+  </defs>
+  <g>
+    <polygon class="st8" points="447.89 10.76 885.78 297.61 885.78 871.31 447.89 1158.16 10 871.31 10 297.61 447.89 10.76"/>
+    <polygon class="st5" points="447.89 10.76 885.78 297.61 885.78 871.31 447.89 1158.16 10 871.31 10 297.61 447.89 10.76"/>
+  </g>
+  <g class="st19">
+    <g>
+      <ellipse class="st17" cx="203.2" cy="350.58" rx="22.6" ry="22.59"/>
+      <ellipse class="st17" cx="239.71" cy="333.2" rx="15.65" ry="15.64"/>
+      <ellipse class="st17" cx="172.77" cy="387.08" rx="17.39" ry="17.38"/>
+      <ellipse class="st17" cx="220.59" cy="394.03" rx="26.08" ry="26.07"/>
+      <ellipse class="st17" cx="264.05" cy="378.39" rx="19.13" ry="19.12"/>
+      <ellipse class="st17" cx="151.04" cy="437.48" rx="15.65" ry="15.64"/>
+      <ellipse class="st17" cx="194.5" cy="441.82" rx="20.87" ry="20.86"/>
+      <ellipse class="st17" cx="242.32" cy="437.48" rx="16.52" ry="16.51"/>
+      <ellipse class="st17" cx="281.44" cy="428.79" rx="12.17" ry="12.17"/>
+      <ellipse class="st17" cx="133.65" cy="341.89" rx="8.69" ry="8.69"/>
+      <ellipse class="st17" cx="164.08" cy="307.14" rx="10.43" ry="10.43"/>
+      <ellipse class="st17" cx="229.28" cy="294.1" rx="13.91" ry="13.9"/>
+      <ellipse class="st17" cx="285.79" cy="320.17" rx="8.69" ry="8.69"/>
+      <circle class="st17" cx="120.61" cy="398.38" r="6.96"/>
+      <circle class="st17" cx="303.18" cy="385.34" r="7.82"/>
+      <ellipse class="st17" cx="181.46" cy="485.27" rx="10.43" ry="10.43"/>
+      <ellipse class="st17" cx="233.63" cy="498.31" rx="8.69" ry="8.69"/>
+      <ellipse class="st17" cx="272.75" cy="472.24" rx="13.04" ry="13.03"/>
+    </g>
+    <g>
+      <ellipse class="st18" cx="359.69" cy="202.86" rx="15.65" ry="15.64"/>
+      <ellipse class="st18" cx="398.81" cy="194.17" rx="12.17" ry="12.17"/>
+      <ellipse class="st18" cx="437.93" cy="215.89" rx="17.39" ry="17.38"/>
+      <ellipse class="st18" cx="472.71" cy="207.2" rx="10.43" ry="10.43"/>
+      <ellipse class="st18" cx="337.95" cy="241.96" rx="13.91" ry="13.9"/>
+      <ellipse class="st18" cx="381.42" cy="246.31" rx="20.87" ry="20.86"/>
+      <ellipse class="st18" cx="424.89" cy="250.65" rx="14.78" ry="14.77"/>
+      <ellipse class="st18" cx="464.01" cy="250.65" rx="13.04" ry="13.03"/>
+      <ellipse class="st18" cx="498.79" cy="259.34" rx="8.69" ry="8.69"/>
+      <ellipse class="st18" cx="324.91" cy="281.07" rx="8.69" ry="8.69"/>
+      <ellipse class="st18" cx="368.38" cy="289.76" rx="13.04" ry="13.03"/>
+      <ellipse class="st18" cx="411.85" cy="294.1" rx="9.56" ry="9.56"/>
+      <ellipse class="st18" cx="455.32" cy="285.41" rx="12.17" ry="12.17"/>
+      <circle class="st18" cx="511.83" cy="294.1" r="7.82"/>
+      <circle class="st18" cx="385.77" cy="159.41" r="6.96"/>
+      <ellipse class="st18" cx="429.24" cy="172.45" rx="8.69" ry="8.69"/>
+    </g>
+    <g>
+      <ellipse class="st20" cx="272.75" cy="498.31" rx="13.04" ry="13.03"/>
+      <ellipse class="st20" cx="311.87" cy="485.27" rx="17.39" ry="17.38"/>
+      <ellipse class="st20" cx="350.99" cy="502.65" rx="20.87" ry="20.86"/>
+      <ellipse class="st20" cx="385.77" cy="520.03" rx="15.65" ry="15.64"/>
+      <ellipse class="st20" cx="255.36" cy="541.76" rx="15.65" ry="15.64"/>
+      <ellipse class="st20" cx="298.83" cy="546.1" rx="22.6" ry="22.59"/>
+      <ellipse class="st20" cx="342.3" cy="554.79" rx="13.91" ry="13.9"/>
+      <ellipse class="st20" cx="381.42" cy="567.82" rx="19.13" ry="19.12"/>
+      <ellipse class="st20" cx="242.32" cy="585.2" rx="9.56" ry="9.56"/>
+      <ellipse class="st20" cx="285.79" cy="593.89" rx="13.04" ry="13.03"/>
+      <ellipse class="st20" cx="329.26" cy="602.58" rx="17.39" ry="17.38"/>
+      <ellipse class="st20" cx="372.73" cy="611.27" rx="10.43" ry="10.43"/>
+      <ellipse class="st20" cx="403.16" cy="593.89" rx="8.69" ry="8.69"/>
+      <circle class="st20" cx="272.75" cy="637.34" r="6.96"/>
+      <ellipse class="st20" cx="320.56" cy="646.03" rx="10.43" ry="10.43"/>
+      <circle class="st20" cx="368.38" cy="646.03" r="6.96"/>
+    </g>
+  </g>
+  <g>
+    <ellipse class="st6" cx="548.35" cy="424.04" rx="202.47" ry="200.12"/>
+    <line class="st0" x1="688.2" y1="585.79" x2="757.34" y2="654.13"/>
+    <g>
+      <line class="st3" x1="435.85" y1="359.79" x2="665.85" y2="359.79"/>
+      <rect class="st11" x="455.85" y="335.08" width="22" height="24.71"/>
+      <rect class="st11" x="487.85" y="315.32" width="22" height="44.48"/>
+      <rect class="st11" x="519.85" y="290.61" width="22" height="69.19"/>
+      <rect class="st11" x="551.85" y="270.84" width="22" height="88.95"/>
+      <rect class="st11" x="583.85" y="310.38" width="22" height="49.42"/>
+      <rect class="st11" x="615.85" y="327.18" width="22" height="32.62"/>
+    </g>
+    <g>
+      <line class="st3" x1="430.85" y1="483.34" x2="665.85" y2="483.34"/>
+      <line class="st3" x1="430.85" y1="394.39" x2="430.85" y2="483.34"/>
+      <line class="st2" x1="430.85" y1="443.81" x2="665.85" y2="443.81"/>
+      <g>
+        <ellipse class="st9" cx="448.85" cy="412.18" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="472.85" cy="424.04" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="498.85" cy="435.9" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="522.85" cy="428.98" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="548.85" cy="453.69" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="576.85" cy="443.81" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="606.85" cy="419.1" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="635.85" cy="439.85" rx="8" ry="7.91"/>
+        <ellipse class="st9" cx="658.85" cy="424.04" rx="8" ry="7.91"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <line class="st4" x1="462.85" y1="503.11" x2="462.85" y2="572.29"/>
+        <line class="st4" x1="450.85" y1="503.11" x2="474.85" y2="503.11"/>
+        <line class="st4" x1="450.85" y1="572.29" x2="474.85" y2="572.29"/>
+        <rect class="st12" x="442.85" y="522.88" width="40" height="29.65"/>
+      </g>
+      <g>
+        <line class="st4" x1="547.85" y1="503.11" x2="547.85" y2="572.29"/>
+        <line class="st4" x1="535.85" y1="503.11" x2="559.85" y2="503.11"/>
+        <line class="st4" x1="535.85" y1="572.29" x2="559.85" y2="572.29"/>
+        <rect class="st13" x="527.85" y="522.88" width="40" height="29.65"/>
+      </g>
+      <g>
+        <line class="st4" x1="632.85" y1="503.11" x2="632.85" y2="572.29"/>
+        <line class="st4" x1="620.85" y1="503.11" x2="644.85" y2="503.11"/>
+        <line class="st4" x1="620.85" y1="572.29" x2="644.85" y2="572.29"/>
+        <rect class="st10" x="612.85" y="522.88" width="40" height="29.65"/>
+      </g>
+    </g>
+  </g>
+  <g class="st16">
+    <g class="st16">
+      <text class="st14" transform="translate(185.21 805.54)"><tspan x="0" y="0">sc</tspan></text>
+    </g>
+    <g class="st16">
+      <text class="st7" transform="translate(412.45 807.7)"><tspan x="0" y="0">QC</tspan></text>
+      <text/>
+      <text/>
+    </g>
+  </g>
+  <path class="st1" d="M424.05,867.1"/>
+  <path class="st1" d="M174.05,867.1"/>
+  <line class="st1" x1="191.9" y1="853.21" x2="698.11" y2="853.21"/>
+  <g class="st16">
+    <text class="st15" transform="translate(143.31 914.55)"><tspan x="0" y="0">Single-Cell Quality Control</tspan></text>
+  </g>
+  <text/>
+</svg>
