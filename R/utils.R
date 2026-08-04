@@ -596,3 +596,31 @@
   invisible(TRUE)
 }
 
+
+
+#' Save a lightweight QC result
+#'
+#' Removes Seurat objects and removed-cell records before saving an
+#' `scqc_result`.
+#'
+#' @param x An object returned by [run_qc()].
+#' @param file Output file name.
+#' @param outdir Output directory.
+#'
+#' @return Invisibly returns the saved file path.
+#'
+#' @export
+save_qc <- function(x, file, outdir = ".") {
+  if (!inherits(x, "scqc_result")) {
+    stop("`x` must be an `scqc_result`.", call. = FALSE)
+  }
+
+  dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+
+  x[c("objects", "object", "removed_cells")] <- NULL
+  path <- file.path(outdir, file)
+
+  saveRDS(x, path)
+  invisible(path)
+}
+

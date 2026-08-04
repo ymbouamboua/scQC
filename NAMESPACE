@@ -2,3 +2,4 @@
 
 export(read_sc_input)
 export(run_qc)
+export(save_qc)
