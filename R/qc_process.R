@@ -22,9 +22,13 @@
     ribo_pat,
     sample_col,
     seed,
-    verbose
+    verbose,
+    decontaminate=FALSE, ambient_method="decontX", ambient_raw=NULL,
+    ambient_batch=NULL, ambient_clusters=NULL, ambient_args=list(),
+    keep_raw=FALSE, ambient_assay="RNAdecont", feature_type="Gene Expression"
 ) {
   started <- Sys.time()
+  current_stage <- "quality_control"
 
   tryCatch(
     {
@@ -41,6 +45,12 @@
         sample_col = sample_col
       )
 
+      called_cells <- colnames(object)
+      batches <- clusters <- NULL
+      if (decontaminate) {
+        batches <- .qc_ambient_groups(object,ambient_batch)
+        if (!is.null(ambient_clusters)) clusters <- .qc_ambient_groups(object,ambient_clusters)
+      }
       object$sample <- sample
 
       input_cells <- ncol(object)
@@ -124,6 +134,23 @@
         )
 
         object <- doublet_result$object
+      }
+
+      ambient_result <- list(summary=data.frame(),cells=data.frame())
+      if (decontaminate) {
+        current_stage <- "ambient"
+        ambient_result <- .qc_decontaminate(
+          object,assay,layer,sample,ambient_method,ambient_raw,batches,clusters,
+          called_cells,keep_raw,ambient_assay,ambient_args,feature_type,seed,verbose)
+        object <- ambient_result$object
+        corrected_assay <- if (keep_raw) ambient_assay else assay
+        object <- .qc_add_metrics(object,corrected_assay,"counts",mito_pat,ribo_pat,
+          calc_ribo,calc_drop,FALSE)
+        if (log_g2u) {
+          cm <- .qc_get_layer(object,corrected_assay,"counts")
+          object$log10_genes_per_umi <- log10(pmax(Matrix::colSums(cm>0)/pmax(Matrix::colSums(cm),1),.Machine$double.xmin))
+        }
+        current_stage <- "quality_control"
       }
 
       final_cells <- ncol(object)
@@ -237,6 +264,8 @@
         summary = summary,
         thresholds = threshold_table,
         doublets = doublet_table,
+        ambient = ambient_result$summary,
+        ambient_cells = ambient_result$cells,
         removed_cells = filter_table[
           !filter_table$retained,
           ,
@@ -248,7 +277,7 @@
       list(
         status = "failed",
         sample = sample_id,
-        stage = "quality_control",
+        stage = current_stage,
         error = conditionMessage(e)
       )
     }

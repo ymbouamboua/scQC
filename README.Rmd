@@ -377,3 +377,57 @@ Until then, please cite the GitHub repository and the package version used in yo
 ## License
 
 This project is licensed under the MIT License.
+
+
+## Optional ambient RNA correction
+
+Correction is disabled unless `decontaminate = TRUE`. When enabled, decontX
+is the default method (standalone decontX, or the compatible celda backend).
+
+```r
+result <- run_qc(
+  seurat_object, species = "mouse",
+  decontaminate = TRUE,
+  ambient_batch = "sample", # use the column identifying capture libraries
+  keep_raw = FALSE
+)
+result$ambient
+object <- result$object
+```
+
+Each input is one capture library unless `ambient_batch` is supplied. Correction
+runs independently per library after raw-count QC and doublet removal. Do not
+use a donor column when several donors share the same capture channel.
+
+The compact default replaces the source assay with sparse corrected counts.
+It removes previous normalized/scaled data and cached downstream analyses;
+normalize again before PCA, neighbors, clustering and UMAP. Keep original raw
+inputs on disk before replacing your only in-memory copy. `keep_raw = TRUE`
+instead retains the raw assay and adds `RNAdecont`, which increases storage.
+Peak processing memory still includes raw and corrected counts temporarily.
+Fractional corrected counts are preserved without rounding.
+
+`ambient_contamination` is added to metadata, raw QC metrics receive a `qc_raw_`
+prefix, and current QC metrics are refreshed without filtering a second time.
+Diagnostics are available in `result$ambient`, `result$ambient_cells`,
+`object@misc$scqc_ambient`, and the exported `Ambient_summary.tsv` and
+`Ambient_cells.tsv` files. No expression matrices are duplicated in `misc`.
+
+SoupX additionally requires unfiltered droplets and preliminary clusters:
+
+```r
+result <- run_qc(
+  seurat_object, species = "mouse",
+  decontaminate = TRUE, ambient_method = "SoupX",
+  ambient_clusters = "seurat_clusters",
+  ambient_raw = "path/to/raw_feature_bc_matrix"
+)
+```
+
+Supply a list of backgrounds named like the inputs for multiple inputs, and
+nested lists named by library when using `ambient_batch`. All original called
+barcodes, including cells removed by QC, are excluded from background droplets.
+SoupX estimates contamination automatically; a separately justified fixed
+fraction can be supplied as `ambient_args = list(contamination_fraction = 0.1)`.
+Use `ambient_args` for additional backend options, for example
+`list(maxIter = 100)` for decontX. A second correction of the same assay is blocked.

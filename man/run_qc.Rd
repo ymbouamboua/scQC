@@ -37,7 +37,15 @@ run_qc(
   n_cores = 2L,
   seed = 1234L,
   return = c("result", "object"),
-  verbose = TRUE
+  verbose = TRUE,
+  decontaminate = FALSE,
+  ambient_method = c("decontX", "SoupX"),
+  ambient_raw = NULL,
+  ambient_batch = NULL,
+  ambient_clusters = NULL,
+  ambient_args = list(),
+  keep_raw = FALSE,
+  ambient_assay = "RNAdecont"
 )
 }
 \arguments{
@@ -103,11 +111,42 @@ be a character vector matching the length of \code{x}.}
 
 \item{n_cores}{Number of parallel workers.}
 
-\item{seed}{Random seed used by scDblFinder.}
+\item{seed}{Random seed used by scDblFinder and ambient correction.}
 
 \item{return}{Return \code{"result"} or only the processed \code{"object"}.}
 
 \item{verbose}{Print progress messages.}
+
+\item{decontaminate}{Enable ambient RNA correction after raw-count QC and
+doublet removal. Default \code{FALSE} preserves the existing workflow.}
+
+\item{ambient_method}{Correction method: \code{"decontX"} (default) or \code{"SoupX"}.
+The standalone decontX package is preferred; compatible celda is supported.}
+
+\item{ambient_raw}{Optional unfiltered droplet matrix or 10x path. For several
+inputs, use a list named like the inputs. For several libraries inside one
+object, use a nested list named by library. Required for SoupX, optional for
+decontX. All original called-cell barcodes are excluded from background.}
+
+\item{ambient_batch}{Optional metadata column identifying capture libraries
+or channels, not biological donors pooled within the same channel. Without
+it, each input is treated as one library. Correction is separate per library.}
+
+\item{ambient_clusters}{Optional metadata column of preliminary cell clusters.
+Required for SoupX; decontX can infer clusters when omitted.}
+
+\item{ambient_args}{Named backend arguments. For decontX these are additional
+decontX arguments. For SoupX they are autoEstCont arguments, or
+\code{list(contamination_fraction=0.1)} for an explicitly supplied fraction.}
+
+\item{keep_raw}{Keep raw and corrected assays in the returned object. Default
+\code{FALSE} keeps corrected counts only in the source assay. Keep raw inputs on
+disk before assigning the result over your only copy. The supplied input
+object is never modified in place. \code{TRUE} retains raw counts and adds the
+corrected assay, increasing memory and RDS size.}
+
+\item{ambient_assay}{Name for the corrected assay when \code{keep_raw=TRUE}.
+Default \code{"RNAdecont"}; existing assays are not overwritten.}
 }
 \value{
 A structured \code{scqc_result}, a Seurat object, or a list of objects.
@@ -115,4 +154,15 @@ A structured \code{scqc_result}, a Seurat object, or a list of objects.
 \description{
 Reads and quality-controls a 10x matrix, count matrix, Seurat object,
 or a named list of supported inputs.
+}
+\details{
+QC thresholds and doublet detection use raw counts. Corrected counts
+are not rounded and can be fractional. The corrected assay becomes default.
+In compact mode normalized/scaled data and cached reductions, graphs,
+neighbors and commands are removed because they predate correction. Rerun
+normalization and downstream analyses. Raw QC metrics are kept with a
+\code{qc_raw_} prefix, and corrected QC metrics are refreshed without refiltering.
+Per-cell contamination and before/after summaries are stored in
+\code{misc$scqc_ambient}, returned as \code{ambient} / \code{ambient_cells}, and exported
+when \code{outdir} is set. Merged results retain per-library provenance.
 }
