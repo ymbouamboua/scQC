@@ -398,6 +398,13 @@ run_qc <- function(
     files$ambient_cells <- file.path(outdir,"Ambient_cells.tsv")
     utils::write.table(ambient_summary,files$ambient,sep="\t",quote=FALSE,row.names=FALSE)
     utils::write.table(ambient_cells,files$ambient_cells,sep="\t",quote=FALSE,row.names=FALSE)
+    files$ambient_umap <- tryCatch(
+      .qc_save_ambient_umaps(ambient_cells,outdir),
+      error=function(e) {
+        warning("Could not export DecontX UMAPs: ",conditionMessage(e),call.=FALSE)
+        character()
+      }
+    )
   }
 
   result <- structure(

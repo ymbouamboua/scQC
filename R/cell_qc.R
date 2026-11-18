@@ -43,7 +43,7 @@ cellqc <- function(x, sample_id="Sample", assay="RNA", layer="counts",
   hb <- grepl(if(species=="human") "^HB[ABDEGQMZ]" else "^Hb[abdegmqz]",rn)
   pct <- function(ix) if(any(ix)) 100*as.numeric(Matrix::colSums(mat[ix,,drop=FALSE]))/pmax(umi,1) else rep(NA_real_,length(umi))
   qc <- data.frame(cell=colnames(mat),sample=sample_id,nCount_RNA=as.numeric(umi),
-                   nFeature_RNA=as.numeric(genes),percent.mt=pct(mt),
+                   nFeature_RNA=as.numeric(genes),pct_mt=pct(mt),
                    percent.ribo=pct(rb),percent.hb=pct(hb),
                    complexity=as.numeric(genes)/pmax(umi,1),stringsAsFactors=FALSE)
   qc$log10_UMI <- log10(qc$nCount_RNA+1)
@@ -52,17 +52,17 @@ cellqc <- function(x, sample_id="Sample", assay="RNA", layer="counts",
   qc$high.features <- qc$nFeature_RNA>max_feat
   qc$low.counts <- qc$nCount_RNA<min_umi
   qc$high.counts <- qc$nCount_RNA>max_umi
-  qc$high.mt <- !is.na(qc$percent.mt) & qc$percent.mt>max_mito
+  qc$high.mt <- !is.na(qc$pct_mt) & qc$pct_mt>max_mito
   qc$low.complexity <- if(is.null(min_complexity)) rep(FALSE,nrow(qc)) else qc$complexity<min_complexity
   qc$pass <- !Reduce(`|`,qc[c("low.features","high.features","low.counts","high.counts","high.mt","low.complexity")])
   qc$status <- factor(ifelse(qc$pass,"Pass","Flagged"),levels=c("Flagged","Pass"))
   med <- function(v) if(all(is.na(v))) NA_real_ else median(v,na.rm=TRUE)
   summary <- data.frame(sample=sample_id,barcodes=nrow(qc),features=nrow(mat),
                         median_UMI=med(qc$nCount_RNA),median_genes=med(qc$nFeature_RNA),
-                        median_mt=med(qc$percent.mt),median_ribo=med(qc$percent.ribo),
+                        median_mt=med(qc$pct_mt),median_ribo=med(qc$percent.ribo),
                         median_complexity=med(qc$complexity),pass=sum(qc$pass),
                         flagged=sum(!qc$pass),pct_pass=100*mean(qc$pass))
-  obj <- SeuratObject::AddMetaData(obj,metadata=setNames(qc$percent.mt,qc$cell),col.name="percent.mt")
+  obj <- SeuratObject::AddMetaData(obj,metadata=setNames(qc$pct_mt,qc$cell),col.name="pct_mt")
   obj <- SeuratObject::AddMetaData(obj,metadata=setNames(as.character(qc$status),qc$cell),col.name="cellqc_status")
   set.seed(seed)
   d <- qc[if(nrow(qc)>max_points) sample.int(nrow(qc),max_points) else seq_len(nrow(qc)),,drop=FALSE]
@@ -85,9 +85,9 @@ cellqc <- function(x, sample_id="Sample", assay="RNA", layer="counts",
   plots <- list(
     umi=histplot("log10_UMI","UMI distribution","log10(UMI + 1)",log10(min_umi+1)),
     genes=histplot("log10_genes","Detected genes","log10(Genes + 1)",log10(min_feat+1),"#4DAF4A"),
-    mitochondrial=histplot("percent.mt","Mitochondrial fraction","Mitochondrial (%)",max_mito,"#E41A1C"),
+    mitochondrial=histplot("pct_mt","Mitochondrial fraction","Mitochondrial (%)",max_mito,"#E41A1C"),
     complexity=scatter("log10_genes","UMI vs detected genes","log10(Genes + 1)"),
-    mt_scatter=scatter("percent.mt","Mitochondrial QC","Mitochondrial (%)",max_mito),
+    mt_scatter=scatter("pct_mt","Mitochondrial QC","Mitochondrial (%)",max_mito),
     retention=ggplot2::ggplot(qc,ggplot2::aes(x=.data$status,fill=.data$status))+
       ggplot2::geom_bar(width=.65)+ggplot2::scale_fill_manual(values=cols)+
       ggplot2::labs(title="QC retention",x=NULL,y="Barcodes")+th+ggplot2::theme(legend.position="none"),

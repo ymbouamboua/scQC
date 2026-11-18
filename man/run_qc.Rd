@@ -45,7 +45,7 @@ run_qc(
   ambient_clusters = NULL,
   ambient_args = list(),
   keep_raw = FALSE,
-  ambient_assay = "RNAdecont"
+  ambient_assay = "RNA"
 )
 }
 \arguments{

@@ -296,14 +296,14 @@
     calc_drop,
     log_g2u
 ) {
-  object$percent_mito <- Seurat::PercentageFeatureSet(
+  object$pct_mt <- Seurat::PercentageFeatureSet(
     object = object,
     pattern = mito_pat,
     assay = assay
   )
 
   if (calc_ribo) {
-    object$percent_ribo <- Seurat::PercentageFeatureSet(
+    object$pct_ribo <- Seurat::PercentageFeatureSet(
       object = object,
       pattern = ribo_pat,
       assay = assay
@@ -472,7 +472,7 @@
     cell = rownames(metadata),
     nFeature_RNA = metadata$nFeature_RNA,
     nCount_RNA = metadata$nCount_RNA,
-    percent_mito = metadata$percent_mito,
+    pct_mt = metadata$pct_mt,
     stringsAsFactors = FALSE
   )
 
@@ -497,16 +497,16 @@
   )
 
   result$fail_mito <- (
-    is.na(result$percent_mito) |
-      result$percent_mito > max_mito
+    is.na(result$pct_mt) |
+      result$pct_mt > max_mito
   )
 
   if (calc_ribo) {
-    result$percent_ribo <- metadata$percent_ribo
+    result$pct_ribo <- metadata$pct_ribo
 
     result$fail_ribo <- (
-      is.na(result$percent_ribo) |
-        result$percent_ribo > max_ribo
+      is.na(result$pct_ribo) |
+        result$pct_ribo > max_ribo
     )
   } else {
     result$fail_ribo <- FALSE

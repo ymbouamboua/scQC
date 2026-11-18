@@ -50,7 +50,7 @@ qc_compare <- function(
     sample.group=NULL,
     assay="RNA",
     species=c("human","mouse"),
-    metrics=c("nCount_RNA","nFeature_RNA","percent.mt","complexity"),
+    metrics=c("nCount_RNA","nFeature_RNA","pct_mt","complexity"),
     color.by=c("group","sample"),
     group.cols=NULL,
     sample.cols=NULL,
@@ -97,8 +97,8 @@ qc_compare <- function(
       qc$group <- as.character(md[[group.col]])
 
     cols <- intersect(
-      c(metrics,"nCount_RNA","nFeature_RNA","percent.mt",
-        "percent.ribo","percent.hb","complexity",
+      c(metrics,"nCount_RNA","nFeature_RNA","pct_mt",
+        "pct_ribo","pct_hb","complexity",
         "pass","status","cellqc_status"),
       names(md)
     )
@@ -108,7 +108,7 @@ qc_compare <- function(
     if(!all(c("nCount_RNA","nFeature_RNA") %in% names(qc)))
       stop("Missing nCount_RNA or nFeature_RNA.",call.=FALSE)
 
-    if("percent.mt" %in% metrics && !"percent.mt" %in% names(qc)) {
+    if("pct_mt" %in% metrics && !"pct_mt" %in% names(qc)) {
 
       if(!requireNamespace("SeuratObject",quietly=TRUE) ||
          !requireNamespace("Matrix",quietly=TRUE))
@@ -127,7 +127,7 @@ qc_compare <- function(
       if(any(mt)) {
         totals <- Matrix::colSums(mat)
         values <- 100*Matrix::colSums(mat[mt,,drop=FALSE])/pmax(totals,1)
-        qc$percent.mt <- unname(values[qc$cell])
+        qc$pct_mt <- unname(values[qc$cell])
       } else {
         warning("No mitochondrial genes detected.")
       }
@@ -260,8 +260,8 @@ qc_compare <- function(
     cells=dplyr::n(),
     median_UMI=med(.data$nCount_RNA),
     median_genes=med(.data$nFeature_RNA),
-    median_mt=if("percent.mt" %in% names(qc))
-      med(.data$percent.mt) else NA_real_,
+    median_mt=if("pct_mt" %in% names(qc))
+      med(.data$pct_mt) else NA_real_,
     median_complexity=med(.data$complexity),
     pct_pass=if(all(is.na(.data$pass))) NA_real_
     else 100*mean(.data$pass,na.rm=TRUE),

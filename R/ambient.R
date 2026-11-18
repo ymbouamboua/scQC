@@ -1,6 +1,6 @@
 # Ambient correction is opt-in. Library boundaries must never be pooled.
 .qc_ambient_validate <- function(decontaminate, ambient_method, keep_raw,
-                                ambient_assay, assay, ambient_batch, ambient_clusters, ambient_args) {
+                                 ambient_assay, assay, ambient_batch, ambient_clusters, ambient_args) {
   for (nm in c("decontaminate","keep_raw")) {
     value <- get(nm)
     if (!is.logical(value) || length(value)!=1L || is.na(value))
@@ -15,7 +15,7 @@
     if (!is.null(value) && !string(value)) stop("`",nm,"` must be a metadata column name.",call.=FALSE)
   }
   if (!is.list(ambient_args) || (length(ambient_args) && (is.null(names(ambient_args)) ||
-      anyNA(names(ambient_args)) || any(!nzchar(names(ambient_args))) || anyDuplicated(names(ambient_args)))))
+                                                          anyNA(names(ambient_args)) || any(!nzchar(names(ambient_args))) || anyDuplicated(names(ambient_args)))))
     stop("`ambient_args` must be a uniquely named list.",call.=FALSE)
   reserved <- c("x","z","batch","background","bgBatch","assayName","bgAssayName","seed","verbose","sc","doPlot")
   if (any(names(ambient_args) %in% reserved))
@@ -40,8 +40,8 @@
     .qc_require_package("SoupX")
     return("SoupX")
   }
-  if (requireNamespace("decontX",quietly=TRUE)) return("decontX")
   if (requireNamespace("celda",quietly=TRUE)) return("celda")
+  if (requireNamespace("decontX",quietly=TRUE)) return("decontX")
   stop("Install Bioconductor package 'decontX' (or a compatible 'celda') for ambient correction.",call.=FALSE)
 }
 
@@ -85,9 +85,28 @@
 .qc_ambient_fit <- function(counts,background,clusters,method,backend,args,seed,verbose) {
   if (method=="decontX") {
     fun <- getExportedValue(backend,"decontX")
-    fit <- do.call(fun,c(list(x=counts,z=if (is.null(clusters)) NULL else as.integer(factor(clusters)),
-      background=background,seed=seed,verbose=verbose),args))
-    return(list(counts=fit$decontXcounts,contamination=fit$contamination))
+    corrected_counts <- getExportedValue(backend,"decontXcounts")
+    sce <- SingleCellExperiment::SingleCellExperiment(list(counts=counts))
+    background_sce <- if (!is.null(background)) {
+      SingleCellExperiment::SingleCellExperiment(list(counts=background))
+    } else {
+      NULL
+    }
+
+    fit <- do.call(fun,c(list(
+      x=sce,z=if (is.null(clusters)) NULL else as.integer(factor(clusters)),
+      background=background_sce,seed=seed,verbose=verbose
+    ),args))
+    umap <- if ("decontX_UMAP" %in% SingleCellExperiment::reducedDimNames(fit)) {
+      SingleCellExperiment::reducedDim(fit,"decontX_UMAP")
+    } else {
+      NULL
+    }
+    return(list(
+      umap=umap,
+      counts=corrected_counts(fit),
+      contamination=SummarizedExperiment::colData(fit)$decontX_contamination
+    ))
   }
   if (is.null(background)) stop("SoupX requires unfiltered `ambient_raw` droplets.",call.=FALSE)
   # Keep original raw droplet counts for retained cells; empty droplets are
@@ -108,7 +127,7 @@
 }
 
 .qc_decontaminate <- function(object,assay,layer,sample_id,method,raw,batches,clusters,
-                             called_cells,keep_raw,ambient_assay,args,feature_type,seed,verbose) {
+                              called_cells,keep_raw,ambient_assay,args,feature_type,seed,verbose) {
   if (identical(object@misc$scqc_ambient$output_assay,assay))
     stop("This assay is already ambient-corrected. Start from raw counts to avoid correcting twice.",call.=FALSE)
   backend <- .qc_ambient_backend(method)
@@ -168,22 +187,38 @@
       stop("Ambient backend returned invalid contamination estimates.",call.=FALSE)
     before <- Matrix::colSums(mat);after <- Matrix::colSums(clean)
     if (any(after>before+1e-6*pmax(1,before))) stop("Ambient correction unexpectedly increased cell totals.",call.=FALSE)
+    if (method == "decontX") {
+      # Apply the rounding described in the DecontX vignette.
+      clean <- Matrix::drop0(round(clean))
+      after <- Matrix::colSums(clean)
+      if (any(after > before))
+        stop("Rounding DecontX counts unexpectedly increased cell totals.", call. = FALSE)
+    }
     diagnostics[[lib]] <- data.frame(sample=sample_id,library=lib,cell=cells,method=method,
-      contamination=rho,raw_umi=as.numeric(before),corrected_umi=as.numeric(after),
-      removed_fraction=as.numeric(1-after/before),raw_features=as.integer(Matrix::colSums(mat>0)),
-      corrected_features=as.integer(Matrix::colSums(clean>0)),stringsAsFactors=FALSE)
+                                     contamination=rho,raw_umi=as.numeric(before),corrected_umi=as.numeric(after),
+                                     removed_fraction=as.numeric(1-after/before),raw_features=as.integer(Matrix::colSums(mat>0)),
+                                     corrected_features=as.integer(Matrix::colSums(clean>0)),stringsAsFactors=FALSE)
+    if (method == "decontX") {
+      umap <- fit$umap
+      coords <- matrix(NA_real_,nrow=length(cells),ncol=2L)
+      if (!is.null(umap) && ncol(umap)>=2L && all(cells %in% rownames(umap))) {
+        coords <- umap[cells,1:2,drop=FALSE]
+      }
+      diagnostics[[lib]]$UMAP_1 <- coords[,1L]
+      diagnostics[[lib]]$UMAP_2 <- coords[,2L]
+    }
     summaries[[lib]] <- data.frame(sample=sample_id,library=lib,method=method,backend=backend,
-      backend_version=as.character(utils::packageVersion(backend)),n_cells=length(cells),
-      n_background=if (is.null(bg)) 0L else ncol(bg),
-      raw_umi=sum(before),corrected_umi=sum(after),removed_fraction=1-sum(after)/sum(before),
-      median_contamination=stats::median(rho),stringsAsFactors=FALSE)
+                                   backend_version=as.character(utils::packageVersion(backend)),n_cells=length(cells),
+                                   n_background=if (is.null(bg)) 0L else ncol(bg),
+                                   raw_umi=sum(before),corrected_umi=sum(after),removed_fraction=1-sum(after)/sum(before),
+                                   median_contamination=stats::median(rho),stringsAsFactors=FALSE)
     corrected_parts[[lib]] <- clean
   }
   clean <- do.call(cbind,corrected_parts)[,colnames(counts),drop=FALSE]
   diagnostic <- do.call(rbind,diagnostics);diagnostic <- diagnostic[match(colnames(object),diagnostic$cell),,drop=FALSE]
   rownames(diagnostic) <- NULL
   original_md <- object[[]]
-  raw_fields <- intersect(c(paste0("nCount_",assay),paste0("nFeature_",assay),"percent_mito","percent_ribo","dropout","log10_genes_per_umi"),names(original_md))
+  raw_fields <- intersect(c(paste0("nCount_",assay),paste0("nFeature_",assay),"pct_mt","pct_ribo","dropout","log10_genes_per_umi"),names(original_md))
   for (nm in raw_fields) object[[paste0("qc_raw_",nm)]] <- original_md[[nm]]
   target <- if (keep_raw) ambient_assay else assay
   replacement <- if (inherits(object[[assay]],"Assay5")) SeuratObject::CreateAssay5Object(counts=clean) else SeuratObject::CreateAssayObject(counts=clean)
@@ -200,9 +235,49 @@
   SeuratObject::DefaultAssay(object) <- target
   # Corrected metadata is refreshed by the caller using the same QC patterns.
   object@misc$scqc_ambient <- list(method=method,backend=backend,
-    input_assay=assay,input_layer=selected,output_assay=target,keep_raw=keep_raw,
-    library_ids=libs,arguments=args,seed=seed,summary=do.call(rbind,summaries),
-    cells=diagnostic,invalidated=invalidated,
-    note="QC and doublet filtering used raw counts. Corrected values may be fractional; normalize/recompute downstream analyses.")
+                                   input_assay=assay,input_layer=selected,output_assay=target,keep_raw=keep_raw,
+                                   rounded_counts=(method == "decontX"),
+                                   library_ids=libs,arguments=args,seed=seed,summary=do.call(rbind,summaries),
+                                   cells=diagnostic,invalidated=invalidated,
+                                   note=if (method == "decontX") {
+                                     "QC and doublet filtering used raw counts. DecontX counts were rounded before export; normalize/recompute downstream analyses."
+                                   } else {
+                                     "QC and doublet filtering used raw counts. Corrected values may be fractional; normalize/recompute downstream analyses."
+                                   })
   list(object=object,summary=do.call(rbind,summaries),cells=diagnostic)
+}
+
+
+.qc_save_ambient_umaps <- function(cells,outdir) {
+  if (!all(c("UMAP_1","UMAP_2") %in% names(cells))) return(character())
+  keep <- is.finite(cells$UMAP_1) & is.finite(cells$UMAP_2) &
+    is.finite(cells$contamination)
+  if (!any(keep)) return(character())
+  groups <- split(cells[keep,,drop=FALSE],
+                  list(cells$sample[keep],cells$library[keep]),drop=TRUE)
+  dest <- file.path(outdir,"ambient_umap")
+  dir.create(dest,recursive=TRUE,showWarnings=FALSE)
+
+  save_one <- function(d,i) {
+    label <- paste(d$sample[1L],d$library[1L],sep=" / ")
+    stem <- gsub("[^A-Za-z0-9_.-]+","_",label)
+    path <- file.path(dest,sprintf("%02d_%s.png",i,stem))
+    palette <- grDevices::hcl.colors(101L,"viridis")
+    color <- palette[1L+as.integer(round(100*d$contamination))]
+    ord <- order(d$contamination)
+    grDevices::png(path,width=1800,height=1400,res=240)
+    device <- grDevices::dev.cur()
+    on.exit(grDevices::dev.off(which=device))
+    graphics::par(mar=c(4,4,4,1))
+    graphics::plot(d$UMAP_1[ord],d$UMAP_2[ord],col=color[ord],pch=16,cex=0.32,
+                   xlab="UMAP 1",ylab="UMAP 2",main=paste("DecontX |",label),
+                   asp=1,bty="l")
+    ticks <- c(0,0.25,0.5,0.75,1)
+    graphics::legend("topright",legend=paste0(100*ticks,"%"),
+                     title="Estimated ambient RNA",pch=16,
+                     col=palette[1L+as.integer(100*ticks)],bg="white",cex=0.8)
+    path
+  }
+
+  vapply(seq_along(groups),function(i) save_one(groups[[i]],i),character(1))
 }
