@@ -136,6 +136,9 @@
         object <- doublet_result$object
       }
 
+      after_doublet_cells <- ncol(object)
+      corrected_mito_cells <- character()
+
       ambient_result <- list(summary=data.frame(),cells=data.frame())
       if (decontaminate) {
         current_stage <- "ambient"
@@ -150,6 +153,22 @@
           cm <- .qc_get_layer(object,corrected_assay,"counts")
           object$log10_genes_per_umi <- log10(pmax(Matrix::colSums(cm>0)/pmax(Matrix::colSums(cm),1),.Machine$double.xmin))
         }
+
+        # Ambient correction can change the mitochondrial fraction. Enforce
+        # max_mito on corrected counts too, so the returned object and its
+        # refreshed pct_mt metric remain consistent with the requested limit.
+        corrected_mito_cells <- colnames(object)[
+          is.na(object$pct_mt) | object$pct_mt > max_mito
+        ]
+
+        if (length(corrected_mito_cells) > 0L) {
+          object <- object[, setdiff(colnames(object), corrected_mito_cells)]
+        }
+
+        if (ncol(object) == 0L) {
+          stop("No cells met `max_mito` after ambient RNA correction.")
+        }
+
         current_stage <- "quality_control"
       }
 
@@ -158,6 +177,10 @@
       filter_table$doublet <- (
         filter_table$cell %in%
           doublet_result$doublet_cells
+      )
+
+      filter_table$fail_corrected_mito <- (
+        filter_table$cell %in% corrected_mito_cells
       )
 
       filter_table$retained <- (
@@ -183,9 +206,11 @@
         sample = sample,
         input_cells = input_cells,
         after_qc_cells = after_qc_cells,
+        after_doublet_cells = after_doublet_cells,
         final_cells = final_cells,
         qc_removed = input_cells - after_qc_cells,
-        doublets_removed = after_qc_cells - final_cells,
+        doublets_removed = after_qc_cells - after_doublet_cells,
+        ambient_mito_removed = length(corrected_mito_cells),
         total_removed = input_cells - final_cells,
         qc_removed_pct = round(
           100 * (input_cells - after_qc_cells) /
@@ -193,7 +218,12 @@
           3
         ),
         doublets_removed_pct = round(
-          100 * (after_qc_cells - final_cells) /
+          100 * (after_qc_cells - after_doublet_cells) /
+            input_cells,
+          3
+        ),
+        ambient_mito_removed_pct = round(
+          100 * length(corrected_mito_cells) /
             input_cells,
           3
         ),

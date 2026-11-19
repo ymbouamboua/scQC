@@ -11,7 +11,7 @@ qc_compare(
   sample.group = NULL,
   assay = "RNA",
   species = c("human", "mouse"),
-  metrics = c("nCount_RNA", "nFeature_RNA", "percent.mt", "complexity"),
+  metrics = c("nCount_RNA", "nFeature_RNA", "pct_mt", "complexity"),
   color.by = c("group", "sample"),
   group.cols = NULL,
   sample.cols = NULL,

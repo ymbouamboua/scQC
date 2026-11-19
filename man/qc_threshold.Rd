@@ -13,7 +13,7 @@ qc_threshold(
   species = c("human", "mouse"),
   type = c("snRNA", "scRNA"),
   method = c("MAD", "fixed", "quantile"),
-  metrics = c("nCount_RNA", "nFeature_RNA", "percent.mt"),
+  metrics = c("nCount_RNA", "nFeature_RNA", "pct_mt"),
   mad.n = 5,
   quantiles = c(0.01, 0.99),
   min.features = 200,

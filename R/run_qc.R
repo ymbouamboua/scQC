@@ -63,11 +63,13 @@
 #' @param ambient_assay Name for the corrected assay when `keep_raw=TRUE`.
 #'   Default `"RNAdecont"`; existing assays are not overwritten.
 #' @details QC thresholds and doublet detection use raw counts. Corrected counts
-#'   are not rounded and can be fractional. The corrected assay becomes default.
+#'   are not rounded and can be fractional. When ambient correction is enabled,
+#'   `max_mito` is also enforced after correction because the mitochondrial
+#'   percentage can change. The corrected assay becomes default.
 #'   In compact mode normalized/scaled data and cached reductions, graphs,
 #'   neighbors and commands are removed because they predate correction. Rerun
 #'   normalization and downstream analyses. Raw QC metrics are kept with a
-#'   `qc_raw_` prefix, and corrected QC metrics are refreshed without refiltering.
+#'   `qc_raw_` prefix, and corrected QC metrics are refreshed after correction.
 #'   Per-cell contamination and before/after summaries are stored in
 #'   `misc$scqc_ambient`, returned as `ambient` / `ambient_cells`, and exported
 #'   when `outdir` is set. Merged results retain per-library provenance.

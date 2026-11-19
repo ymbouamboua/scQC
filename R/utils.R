@@ -235,7 +235,8 @@
     fail_mito = "high_mito",
     fail_ribo = "high_ribo",
     fail_drop = "high_dropout",
-    fail_g2u = "low_genes_per_umi"
+    fail_g2u = "low_genes_per_umi",
+    fail_corrected_mito = "high_mito_after_decontamination"
   )
 
   for (i in seq_len(nrow(filter_table))) {

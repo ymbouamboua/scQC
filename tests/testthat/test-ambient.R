@@ -11,6 +11,44 @@ ambient_fixture <- function() {
 ambient_qc <- function(object,...) run_qc(object,sample_id="s",min_feat=0,min_umi=0,
   max_mito=100,method="none",outdir=NULL,save_object=FALSE,verbose=FALSE,...)
 
+test_that("max_mito is also enforced after ambient correction", {
+  counts <- Matrix::Matrix(
+    matrix(
+      c(4, 96,
+        0, 100),
+      nrow = 2,
+      dimnames = list(c("MT-ND1", "G1"), c("mito_shift", "retained"))
+    ),
+    sparse = TRUE
+  )
+  object <- SeuratObject::CreateSeuratObject(counts, min.cells = 0, min.features = 0)
+
+  testthat::with_mocked_bindings({
+    result <- run_qc(
+      object, sample_id = "s", min_feat = 0, min_umi = 0, max_mito = 5,
+      method = "none", decontaminate = TRUE, outdir = NULL,
+      save_object = FALSE, verbose = FALSE
+    )
+    expect_identical(colnames(result$object), "retained")
+    expect_equal(result$summary$ambient_mito_removed, 1)
+    expect_true(result$removed_cells$fail_corrected_mito[
+      result$removed_cells$cell == "mito_shift"
+    ])
+    expect_identical(
+      result$removed_cells$removal_reason[result$removed_cells$cell == "mito_shift"],
+      "high_mito_after_decontamination"
+    )
+  },
+    .qc_ambient_backend = function(method) "Matrix",
+    .qc_ambient_fit = function(counts, ...) {
+      corrected <- counts
+      corrected["G1", "mito_shift"] <- 20
+      list(counts = corrected, contamination = rep(0.2, ncol(counts)))
+    },
+    .package = "scQC"
+  )
+})
+
 test_that("decontamination is opt-in, defaults to decontX and compact mode preserves input", {
   testthat::with_mocked_bindings({
   obj <- ambient_fixture();raw <- .qc_get_layer(obj,"RNA","counts")

@@ -157,11 +157,13 @@ or a named list of supported inputs.
 }
 \details{
 QC thresholds and doublet detection use raw counts. Corrected counts
-are not rounded and can be fractional. The corrected assay becomes default.
+are not rounded and can be fractional. When ambient correction is enabled,
+\code{max_mito} is also enforced after correction because the mitochondrial
+percentage can change. The corrected assay becomes default.
 In compact mode normalized/scaled data and cached reductions, graphs,
 neighbors and commands are removed because they predate correction. Rerun
 normalization and downstream analyses. Raw QC metrics are kept with a
-\code{qc_raw_} prefix, and corrected QC metrics are refreshed without refiltering.
+\code{qc_raw_} prefix, and corrected QC metrics are refreshed after correction.
 Per-cell contamination and before/after summaries are stored in
 \code{misc$scqc_ambient}, returned as \code{ambient} / \code{ambient_cells}, and exported
 when \code{outdir} is set. Merged results retain per-library provenance.
